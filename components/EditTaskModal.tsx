@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Task, Importance } from '../types';
+import { Task, Importance } from '../types.ts';
 
 interface EditTaskModalProps {
   task: Task;

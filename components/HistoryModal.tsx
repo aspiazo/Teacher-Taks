@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DayRecord } from '../types';
+import { DayRecord } from '../types.ts';
 
 interface HistoryModalProps {
   history: DayRecord[];
@@ -42,8 +42,8 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ history, onClose }) => {
 const formatRecord = (record: DayRecord) => {
   const sortedTasks = [...record.tasks].sort((a, b) => {
     const importanceMap = { high: 3, medium: 2, low: 1 };
-    if (importanceMap[a.importance] !== importanceMap[b.importance]) {
-      return importanceMap[b.importance] - importanceMap[a.importance];
+    if (importanceMap[a.importance as keyof typeof importanceMap] !== importanceMap[b.importance as keyof typeof importanceMap]) {
+      return importanceMap[b.importance as keyof typeof importanceMap] - importanceMap[a.importance as keyof typeof importanceMap];
     }
     return (a.time || '').localeCompare(b.time || '');
   });

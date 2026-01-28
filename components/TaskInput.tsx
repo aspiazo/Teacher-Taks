@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ICONS } from '../constants';
+import { ICONS } from '../constants.tsx';
 
 interface TaskInputProps {
   onAddTasks: (text: string) => void;

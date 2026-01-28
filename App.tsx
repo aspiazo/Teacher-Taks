@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Importance, Task, DayRecord } from './types';
-import TaskInput from './components/TaskInput';
-import HistoryModal from './components/HistoryModal';
-import EditTaskModal from './components/EditTaskModal';
-import { extractTasks } from './services/gemini';
-import { ICONS } from './constants';
+import { Importance, Task, DayRecord } from './types.ts';
+import TaskInput from './components/TaskInput.tsx';
+import HistoryModal from './components/HistoryModal.tsx';
+import EditTaskModal from './components/EditTaskModal.tsx';
+import { extractTasks } from './services/gemini.ts';
+import { ICONS } from './constants.tsx';
 
 interface TaskItemProps {
   task: Task;
@@ -51,13 +51,17 @@ const App: React.FC = () => {
   useEffect(() => {
     const storedHistory = localStorage.getItem('teacher_task_history');
     if (storedHistory) {
-      const parsedHistory = JSON.parse(storedHistory);
-      setHistory(parsedHistory);
-      
-      const todayStr = new Date().toLocaleDateString();
-      const todayRecord = parsedHistory.find((r: DayRecord) => r.date === todayStr);
-      if (todayRecord) {
-        setTasks(todayRecord.tasks);
+      try {
+        const parsedHistory = JSON.parse(storedHistory);
+        setHistory(parsedHistory);
+        
+        const todayStr = new Date().toLocaleDateString();
+        const todayRecord = parsedHistory.find((r: DayRecord) => r.date === todayStr);
+        if (todayRecord) {
+          setTasks(todayRecord.tasks);
+        }
+      } catch (e) {
+        console.error("Failed to parse history", e);
       }
     }
   }, []);
@@ -149,7 +153,7 @@ const App: React.FC = () => {
       }
       if (a.time === "no fixed time" && b.time !== "no fixed time") return 1;
       if (b.time === "no fixed time" && a.time !== "no fixed time") return -1;
-      return a.time.localeCompare(b.time);
+      return (a.time || "").localeCompare(b.time || "");
     });
   }, [tasks]);
 
@@ -163,7 +167,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 text-gray-900 selection:bg-gray-200">
       <div className="max-w-xl mx-auto relative">
-        {/* Neutral Feedback Toast */}
         {feedback && (
           <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg z-[60] animate-in fade-in slide-in-from-top-4 duration-300">
             {feedback}
