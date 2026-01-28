@@ -4,7 +4,7 @@ import { TaskExtractionResponse } from "../types";
 
 export const extractTasks = async (userInput: string): Promise<TaskExtractionResponse> => {
   // Use process.env.API_KEY directly for initialization as per guidelines
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
   
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
