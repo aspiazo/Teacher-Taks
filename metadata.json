@@ -1,0 +1,5 @@
+{
+  "name": "TeacherTask - Daily Organizer",
+  "description": "A minimalist daily task organizer for teachers that sorts schedules based on importance and time.",
+  "requestFramePermissions": []
+}
