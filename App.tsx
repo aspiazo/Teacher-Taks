@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Importance, Task, DayRecord } from './types.ts';
-import TaskInput from './components/TaskInput.tsx';
-import HistoryModal from './components/HistoryModal.tsx';
-import EditTaskModal from './components/EditTaskModal.tsx';
-import { extractTasks } from './services/gemini.ts';
-import { ICONS } from './constants.tsx';
+import { Importance, Task, DayRecord } from './types';
+import TaskInput from './components/TaskInput';
+import HistoryModal from './components/HistoryModal';
+import EditTaskModal from './components/EditTaskModal';
+import { extractTasks } from './services/gemini';
+import { ICONS } from './constants';
 
 interface TaskItemProps {
   task: Task;
@@ -175,12 +174,12 @@ const App: React.FC = () => {
 
         <header className="flex justify-between items-end mb-12">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900">TeacherTask</h1>
-            <p className="text-gray-400 text-sm mt-1 font-medium">Daily Organizer</p>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">Today</h1>
+            <p className="text-gray-400 font-medium">Simplify your teaching day.</p>
           </div>
           <button 
             onClick={() => setShowHistory(true)}
-            className="p-2 text-gray-300 hover:text-gray-900 transition-colors"
+            className="p-3 rounded-2xl bg-white border border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-300 transition-all shadow-sm"
             aria-label="View history"
           >
             <ICONS.History className="w-5 h-5" />
@@ -189,92 +188,91 @@ const App: React.FC = () => {
 
         <TaskInput onAddTasks={handleAddTasks} isLoading={isLoading} />
 
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 animate-pulse">
-            <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-800 rounded-full animate-spin mb-4"></div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Organizing...</p>
-          </div>
-        ) : tasks.length > 0 ? (
-          <div className="mt-8 animate-in fade-in duration-500">
-            <h2 className="text-3xl font-bold mb-10 text-gray-900">Today</h2>
-            
-            <div className="space-y-12">
-              <section>
-                <h3 className="text-xs font-black text-gray-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
-                  🔴 Priority
-                </h3>
-                <div className="space-y-4">
-                  {priorityTasks.map(task => (
-                    <TaskItem key={task.id} task={task} isPriority onEdit={setEditingTask} onToggle={handleToggleTask} />
-                  ))}
-                  {priorityTasks.length === 0 && sortedActiveTasks.length > 0 && (
-                    <p className="text-gray-300 italic text-sm">Priority focus achieved.</p>
-                  )}
-                  {sortedActiveTasks.length === 0 && completedTasks.length === 0 && (
-                    <p className="text-gray-300 italic text-sm">No priority tasks.</p>
-                  )}
-                </div>
-              </section>
-
-              <section>
-                <h3 className="text-xs font-black text-gray-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
-                  ⚪ Other tasks
-                </h3>
-                <div className="space-y-3">
-                  {otherTasks.length > 0 ? (
-                    otherTasks.map(task => (
-                      <TaskItem key={task.id} task={task} onEdit={setEditingTask} onToggle={handleToggleTask} />
-                    ))
-                  ) : (
-                    <p className="text-gray-300 italic text-sm">No other pending tasks.</p>
-                  )}
-                </div>
-              </section>
-
-              {completedTasks.length > 0 && (
-                <section className="pt-8 border-t border-gray-100">
-                  <h3 className="text-xs font-black text-gray-400 mb-6 flex items-center gap-2 uppercase tracking-[0.2em]">
-                    Completed
-                  </h3>
-                  <div className="space-y-3">
-                    {completedTasks.map(task => (
-                      <TaskItem key={task.id} task={task} onEdit={setEditingTask} onToggle={handleToggleTask} />
-                    ))}
-                  </div>
-                </section>
-              )}
-            </div>
-            
-            <div className="mt-24 pt-8 border-t border-gray-100 flex justify-center">
-              <button 
-                onClick={() => {
-                  if(confirm("Clear today's schedule?")) setTasks([]);
-                }}
-                className="text-[10px] font-bold text-gray-300 hover:text-red-400 transition-colors uppercase tracking-[0.2em]"
-              >
-                Clear Schedule
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-32">
-            <p className="text-gray-300 font-medium italic text-sm">Empty schedule.</p>
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-12 gap-4">
+            <div className="w-6 h-6 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-bold text-gray-300 uppercase tracking-widest">Organizing your thoughts...</p>
           </div>
         )}
+
+        {!isLoading && tasks.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-gray-300 font-medium italic">Your daily plan will appear here.</p>
+          </div>
+        )}
+
+        {!isLoading && tasks.length > 0 && (
+          <div className="space-y-12">
+            {priorityTasks.length > 0 && (
+              <section>
+                <h2 className="text-xs font-black text-red-500 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                  Priority
+                </h2>
+                <div className="space-y-1">
+                  {priorityTasks.map(task => (
+                    <TaskItem 
+                      key={task.id} 
+                      task={task} 
+                      isPriority 
+                      onEdit={setEditingTask} 
+                      onToggle={handleToggleTask} 
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {otherTasks.length > 0 && (
+              <section>
+                <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
+                  Other tasks
+                </h2>
+                <div className="space-y-1">
+                  {otherTasks.map(task => (
+                    <TaskItem 
+                      key={task.id} 
+                      task={task} 
+                      onEdit={setEditingTask} 
+                      onToggle={handleToggleTask} 
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {completedTasks.length > 0 && (
+              <section>
+                <h2 className="text-xs font-black text-gray-300 uppercase tracking-widest mb-6">Completed</h2>
+                <div className="space-y-1">
+                  {completedTasks.map(task => (
+                    <TaskItem 
+                      key={task.id} 
+                      task={task} 
+                      onEdit={setEditingTask} 
+                      onToggle={handleToggleTask} 
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        )}
+
+        {showHistory && (
+          <HistoryModal history={history} onClose={() => setShowHistory(false)} />
+        )}
+
+        {editingTask && (
+          <EditTaskModal 
+            task={editingTask} 
+            onSave={handleUpdateTask} 
+            onDelete={handleDeleteTask} 
+            onClose={() => setEditingTask(null)} 
+          />
+        )}
       </div>
-
-      {showHistory && (
-        <HistoryModal history={history} onClose={() => setShowHistory(false)} />
-      )}
-
-      {editingTask && (
-        <EditTaskModal 
-          task={editingTask} 
-          onSave={handleUpdateTask} 
-          onDelete={handleDeleteTask}
-          onClose={() => setEditingTask(null)} 
-        />
-      )}
     </div>
   );
 };
